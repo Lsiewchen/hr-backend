@@ -1,4 +1,4 @@
-package Practicum2.entities;
+package Practicum2.entities.id;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -38,7 +38,8 @@ public class DeptEmpId implements Serializable {
             return false;
         }
         DeptEmpId inDeptEmp = (DeptEmpId) deptEmp;
-        return Objects.equals(employees, inDeptEmp.employees) && Objects.equals(departments, inDeptEmp.departments);
+        return Objects.equals(employees, inDeptEmp.employees) &&
+                Objects.equals(departments, inDeptEmp.departments);
     }
 
     @Override

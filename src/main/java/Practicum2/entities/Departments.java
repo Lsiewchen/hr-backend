@@ -1,6 +1,7 @@
 package Practicum2.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -8,8 +9,10 @@ import java.util.List;
 @Table(name = "departments")
 public class Departments {
     @Id
+    @Size(max = 4)
     @Column(name = "dept_no")
     private String deptNo;
+    @Size(max = 40)
     @Column(name = "dept_name")
     private String deptName;
     @OneToMany(mappedBy = "departments")

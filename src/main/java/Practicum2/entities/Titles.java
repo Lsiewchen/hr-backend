@@ -1,36 +1,31 @@
 package Practicum2.entities;
 
+import Practicum2.entities.id.TitlesId;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
 @Entity
+@IdClass(TitlesId.class)
 @Table(name="titles")
 public class Titles {
     @Id
-    @Column(name = "emp_no")
-    private int empNo;
+    @Size(max = 50)
     @Column(name = "title")
     private String title;
+    @Id
     @Column(name = "from_date")
     private LocalDate fromDate;
-    @Column(name = "to_date")
-    private LocalDate toDate;
-
+    @Id
     @ManyToOne
     @JoinColumn(name="emp_no", referencedColumnName = "emp_no")
     private Employees employees;
 
+    @Column(name = "to_date")
+    private LocalDate toDate;
 
     public Titles() {}
-
-    public int getEmpNo() {
-        return empNo;
-    }
-
-    public void setEmpNo(int empNo) {
-        this.empNo = empNo;
-    }
 
     public String getTitle() {
         return title;
@@ -48,19 +43,19 @@ public class Titles {
         this.fromDate = fromDate;
     }
 
+    public Employees getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(Employees employees) {
+        this.employees = employees;
+    }
+
     public LocalDate getToDate() {
         return toDate;
     }
 
     public void setToDate(LocalDate toDate) {
         this.toDate = toDate;
-    }
-
-    public Employees getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employees employee) {
-        this.employee = employee;
     }
 }

@@ -1,5 +1,6 @@
 package Practicum2.entities;
 
+import Practicum2.entities.id.DeptEmpId;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ public class DeptEmp {
     @ManyToOne
     @JoinColumn(name = "dept_no", referencedColumnName = "dept_no")
     private Departments departments;
+
     @Column(name = "from_date")
     private LocalDate fromDate;
     @Column(name = "to_date")

@@ -1,4 +1,4 @@
-package Practicum2.entities;
+package Practicum2.entities.id;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -13,6 +13,22 @@ public class DeptManagerId implements Serializable {
         this.employees = employees;
     }
 
+    public String getDepartments() {
+        return departments;
+    }
+
+    public void setDepartments(String departments) {
+        this.departments = departments;
+    }
+
+    public int getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(int employees) {
+        this.employees = employees;
+    }
+
     @Override
     public boolean equals(Object deptManager) {
         if (this == deptManager) {
@@ -22,7 +38,8 @@ public class DeptManagerId implements Serializable {
             return false;
         }
         DeptManagerId inDeptManager = (DeptManagerId) deptManager;
-        return Objects.equals(departments, inDeptManager.departments) && Objects.equals(employees, inDeptManager.employees);
+        return Objects.equals(departments, inDeptManager.departments) &&
+                Objects.equals(employees, inDeptManager.employees);
     }
 
     @Override

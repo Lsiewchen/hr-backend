@@ -1,6 +1,7 @@
 package Practicum2.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,8 +14,10 @@ public class Employees {
     private int empNo;
     @Column(name = "birth_date")
     private LocalDate birthDate;
+    @Size(max = 14)
     @Column(name = "first_name")
     private String firstName;
+    @Size(max = 16)
     @Column(name = "last_name")
     private String lastName;
     @Column(name = "gender")
@@ -24,16 +27,13 @@ public class Employees {
     private LocalDate hireDate;
 
     @OneToMany(mappedBy = "employees")
-    private List<Salaries> salariesList;
-
+    private List<Salaries> salaries;
     @OneToMany(mappedBy = "employees")
-    private List<Titles> titlesList;
-
+    private List<Titles> titles;
     @OneToMany(mappedBy = "employees")
-    private List<DeptEmp> deptEmpsList;
-
+    private List<DeptEmp> deptEmp;
     @OneToMany(mappedBy = "employees")
-    private List<DeptManager> deptManagersList;
+    private List<DeptManager> deptManager;
 
 
     public Employees() {}
@@ -86,36 +86,36 @@ public class Employees {
         this.hireDate = hireDate;
     }
 
-    public List<Salaries> getSalariesList() {
-        return salariesList;
+    public List<Salaries> getSalaries() {
+        return salaries;
     }
 
-    public void setSalariesList(List<Salaries> salariesList) {
-        this.salariesList = salariesList;
+    public void setSalaries(List<Salaries> salaries) {
+        this.salaries = salaries;
     }
 
-    public List<Titles> getTitlesList() {
-        return titlesList;
+    public List<Titles> getTitles() {
+        return titles;
     }
 
-    public void setTitlesList(List<Titles> titlesList) {
-        this.titlesList = titlesList;
+    public void setTitles(List<Titles> titles) {
+        this.titles = titles;
     }
 
-    public List<DeptEmp> getDeptEmpsList() {
-        return deptEmpsList;
+    public List<DeptEmp> getDeptEmp() {
+        return deptEmp;
     }
 
-    public void setDeptEmpsList(List<DeptEmp> deptEmpsList) {
-        this.deptEmpsList = deptEmpsList;
+    public void setDeptEmp(List<DeptEmp> deptEmp) {
+        this.deptEmp = deptEmp;
     }
 
-    public List<DeptManager> getDeptManagersList() {
-        return deptManagersList;
+    public List<DeptManager> getDeptManager() {
+        return deptManager;
     }
 
-    public void setDeptManagersList(List<DeptManager> deptManagersList) {
-        this.deptManagersList = deptManagersList;
+    public void setDeptManager(List<DeptManager> deptManager) {
+        this.deptManager = deptManager;
     }
 }
 

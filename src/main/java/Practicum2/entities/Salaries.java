@@ -1,44 +1,37 @@
 package Practicum2.entities;
 
 
+import Practicum2.entities.id.SalariesId;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
+@IdClass(SalariesId.class)
 @Table(name="salaries")
 public class Salaries {
     @Id
-    @Column(name = "emp_no")
-    private int empNo;
-    @Column(name = "salary")
-    private BigDecimal salary;
-    @Column(name = "from_date")
-    private LocalDate fromDate;
-    @Column(name = "to_date")
-    private LocalDate toDate;
-
     @ManyToOne
     @JoinColumn(name = "emp_no", referencedColumnName = "emp_no")
     private Employees employees;
+    @Id
+    @Column(name = "from_date")
+    private LocalDate fromDate;
+
+    @Column(name = "salary")
+    private BigDecimal salary;
+    @Column(name = "to_date")
+    private LocalDate toDate;
 
     public Salaries() {}
 
-    public int getEmpNo() {
-        return empNo;
+    public Employees getEmployees() {
+        return employees;
     }
 
-    public void setEmpNo(int empNo) {
-        this.empNo = empNo;
-    }
-
-    public BigDecimal getSalary() {
-        return salary;
-    }
-
-    public void setSalary(BigDecimal salary) {
-        this.salary = salary;
+    public void setEmployees(Employees employees) {
+        this.employees = employees;
     }
 
     public LocalDate getFromDate() {
@@ -49,19 +42,19 @@ public class Salaries {
         this.fromDate = fromDate;
     }
 
+    public BigDecimal getSalary() {
+        return salary;
+    }
+
+    public void setSalary(BigDecimal salary) {
+        this.salary = salary;
+    }
+
     public LocalDate getToDate() {
         return toDate;
     }
 
     public void setToDate(LocalDate toDate) {
         this.toDate = toDate;
-    }
-
-    public Employees getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employees employee) {
-        this.employee = employee;
     }
 }
