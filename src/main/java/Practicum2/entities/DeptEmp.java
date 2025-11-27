@@ -1,31 +1,42 @@
 package Practicum2.entities;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
-//@Entity
-//@Table("dept_emp")
+@Entity
+@IdClass(DeptEmpId.class)
+@Table(name = "dept_emp")
 public class DeptEmp {
-    private int empNo;
-    private String deptNo;
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "emp_no", referencedColumnName = "emp_no")
+    private Employees employees;
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "dept_no", referencedColumnName = "dept_no")
+    private Departments departments;
+    @Column(name = "from_date")
     private LocalDate fromDate;
+    @Column(name = "to_date")
     private LocalDate toDate;
 
     public DeptEmp() {}
 
-    public int getEmpNo() {
-        return empNo;
+    public Employees getEmployees() {
+        return employees;
     }
 
-    public void setEmpNo(int empNo) {
-        this.empNo = empNo;
+    public void setEmployees(Employees employees) {
+        this.employees = employees;
     }
 
-    public String getDeptNo() {
-        return deptNo;
+    public Departments getDepartments() {
+        return departments;
     }
 
-    public void setDeptNo(String deptNo) {
-        this.deptNo = deptNo;
+    public void setDepartments(Departments departments) {
+        this.departments = departments;
     }
 
     public LocalDate getFromDate() {
