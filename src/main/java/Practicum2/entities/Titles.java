@@ -1,14 +1,26 @@
 package Practicum2.entities;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
-//@Entity
-//@Table(name="titles")
+@Entity
+@Table(name="titles")
 public class Titles {
+    @Id
+    @Column(name = "emp_no")
     private int empNo;
+    @Column(name = "title")
     private String title;
+    @Column(name = "from_date")
     private LocalDate fromDate;
+    @Column(name = "to_date")
     private LocalDate toDate;
+
+    @ManyToOne
+    @JoinColumn(name="emp_no", referencedColumnName = "emp_no")
+    private Employees employees;
+
 
     public Titles() {}
 
@@ -42,5 +54,13 @@ public class Titles {
 
     public void setToDate(LocalDate toDate) {
         this.toDate = toDate;
+    }
+
+    public Employees getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employees employee) {
+        this.employee = employee;
     }
 }
