@@ -1,18 +1,18 @@
-package Practicum2;
+package Practicum2.entities;
 
-import org.glassfish.jersey.message.filtering.EntityFiltering;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 //@Entity
-//@Table("dept_emp")
-public class DeptEmp {
+//@Table(name="salaries")
+public class Salaries {
     private int empNo;
-    private String deptNo;
+    private BigDecimal salary;
     private LocalDate fromDate;
     private LocalDate toDate;
 
-    public DeptEmp() {}
+    public Salaries() {}
 
     public int getEmpNo() {
         return empNo;
@@ -22,12 +22,12 @@ public class DeptEmp {
         this.empNo = empNo;
     }
 
-    public String getDeptNo() {
-        return deptNo;
+    public BigDecimal getSalary() {
+        return salary;
     }
 
-    public void setDeptNo(String deptNo) {
-        this.deptNo = deptNo;
+    public void setSalary(BigDecimal salary) {
+        this.salary = salary;
     }
 
     public LocalDate getFromDate() {

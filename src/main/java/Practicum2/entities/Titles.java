@@ -1,24 +1,16 @@
-package Practicum2;
+package Practicum2.entities;
 
 import java.time.LocalDate;
 
 //@Entity
-//@Table("dept_manager")
-public class DeptManager {
-    private String deptNo;
+//@Table(name="titles")
+public class Titles {
     private int empNo;
+    private String title;
     private LocalDate fromDate;
     private LocalDate toDate;
 
-    public DeptManager() {}
-
-    public String getDeptNo() {
-        return deptNo;
-    }
-
-    public void setDeptNo(String deptNo) {
-        this.deptNo = deptNo;
-    }
+    public Titles() {}
 
     public int getEmpNo() {
         return empNo;
@@ -26,6 +18,14 @@ public class DeptManager {
 
     public void setEmpNo(int empNo) {
         this.empNo = empNo;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public LocalDate getFromDate() {

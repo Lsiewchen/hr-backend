@@ -1,4 +1,4 @@
-package Practicum2;
+package Practicum2.entities;
 
 import java.time.LocalDate;
 

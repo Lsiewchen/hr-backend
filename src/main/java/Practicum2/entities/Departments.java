@@ -1,6 +1,4 @@
-package Practicum2;
-
-import org.glassfish.jersey.message.filtering.EntityFiltering;
+package Practicum2.entities;
 
 //@Entity
 //@Table("departments")

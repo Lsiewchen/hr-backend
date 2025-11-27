@@ -1,18 +1,24 @@
-package Practicum2;
+package Practicum2.entities;
 
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 //@Entity
-//@Table(name="salaries")
-public class Salaries {
+//@Table("dept_manager")
+public class DeptManager {
+    private String deptNo;
     private int empNo;
-    private BigDecimal salary;
     private LocalDate fromDate;
     private LocalDate toDate;
 
-    public Salaries() {}
+    public DeptManager() {}
+
+    public String getDeptNo() {
+        return deptNo;
+    }
+
+    public void setDeptNo(String deptNo) {
+        this.deptNo = deptNo;
+    }
 
     public int getEmpNo() {
         return empNo;
@@ -20,14 +26,6 @@ public class Salaries {
 
     public void setEmpNo(int empNo) {
         this.empNo = empNo;
-    }
-
-    public BigDecimal getSalary() {
-        return salary;
-    }
-
-    public void setSalary(BigDecimal salary) {
-        this.salary = salary;
     }
 
     public LocalDate getFromDate() {
