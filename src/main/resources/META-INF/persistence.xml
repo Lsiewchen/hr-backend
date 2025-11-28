@@ -12,13 +12,20 @@
 
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
+        <class>Practicum2.entities.Departments</class>
+        <class>Practicum2.entities.DeptEmp</class>
+        <class>Practicum2.entities.DeptManager</class>
+        <class>Practicum2.entities.Employees</class>
+        <class>Practicum2.entities.Salaries</class>
+        <class>Practicum2.entities.Titles</class>
+
         <properties>
             <property name="jakarta.persistence.jdbc.driver"
                       value="org.mariadb.jdbc.Driver"/>
             <property name="jakarta.persistence.jdbc.url"
                       value="jdbc:mariadb://localhost:3306"/>
             <property name="jakarta.persistence.jdbc.user" value="root"/>
-            <property name="jakarta.persistence.jdbc.password" value="root"/>
+            <property name="jakarta.persistence.jdbc.password" value="abc123"/>
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.format_sql" value="true" />
         </properties>

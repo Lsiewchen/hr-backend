@@ -1,5 +1,6 @@
 package Practicum2.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
@@ -15,8 +16,10 @@ public class Departments {
     @Size(max = 40)
     @Column(name = "dept_name")
     private String deptName;
+    @JsonIgnore
     @OneToMany(mappedBy = "departments")
     private List<DeptEmp> deptEmp;
+    @JsonIgnore
     @OneToMany(mappedBy = "departments")
     private List<DeptManager> deptManager;
 

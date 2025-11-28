@@ -3,7 +3,6 @@ package Practicum2;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class EMFactory {
@@ -19,8 +18,7 @@ public class EMFactory {
                         DBUrl + DBName));
     }
 
-    public static EntityManagerFactory getInstance(String persistenceUnitName,
-                                             Map<String,String> persistenceMap){
+    public static EntityManagerFactory getInstance(){
         if (emFactory == null){
             synchronized (EMFactory.class) {
                 if (emFactory == null) {

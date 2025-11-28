@@ -1,10 +1,15 @@
 package Practicum2;
 
+import Practicum2.entities.Departments;
+import Practicum2.entities.Employees;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Path("hr")
 public class HRResource {
@@ -14,8 +19,15 @@ public class HRResource {
     @Path("all-dept")
     @Produces(MediaType.APPLICATION_JSON)
     public Response allDepartments() {
-        // from 'departments' table, get all
-        return Response.ok().entity("all dept success").build();
+        String query = "SELECT d FROM Departments d";
+        List<Departments> departments;
+        try (EntityManagerFactory emf = EMFactory.getInstance()) {
+            EntityManager em = emf.createEntityManager();
+            em.getTransaction().begin();
+            departments = em.createQuery(query, Departments.class).getResultList();
+            em.close();
+        }
+        return Response.ok().entity(departments).build();
     }
 
     //task 2
