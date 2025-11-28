@@ -14,9 +14,9 @@ public class Driver {
         persistenceMap.put("jakarta.persistence.jdbc.url",
                 "jdbc:mariadb://localhost:3306/"+DBNAME);
 
-        try (EntityManagerFactory emf = Persistence.createEntityManagerFactory(
-                "HRService", persistenceMap)) {
-
-        }
+//        try (EMFactory emf = EMFactory.getInstance(
+//                "HRService", persistenceMap)) {
+//
+//        }
     }
 }

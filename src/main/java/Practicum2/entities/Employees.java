@@ -1,5 +1,6 @@
 package Practicum2.entities;
 
+import Practicum2.entities.enums.Gender;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
