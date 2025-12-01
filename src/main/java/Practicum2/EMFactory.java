@@ -28,4 +28,8 @@ public class EMFactory {
         }
         return emf;
     }
+
+    public static void closeEMF() {
+        emf.close();
+    }
 }

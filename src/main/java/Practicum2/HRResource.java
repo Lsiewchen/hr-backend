@@ -1,7 +1,8 @@
 package Practicum2;
 
-import Practicum2.entities.Departments;
-import Practicum2.entities.Employees;
+import Practicum2.entities.*;
+import Practicum2.entities.dto.EmployeesDTO;
+import Practicum2.entities.dto.PromotionDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.ws.rs.*;
@@ -9,23 +10,23 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Path("hr")
 public class HRResource {
+
+    private final EntityManagerFactory emf = EMFactory.getInstance();
 
     //task 1
     @GET
     @Path("all-dept")
     @Produces(MediaType.APPLICATION_JSON)
     public Response allDepartments() {
-        String query = "SELECT d FROM Departments d";
         List<Departments> departments;
-        try (EntityManagerFactory emf = EMFactory.getInstance()) {
-            EntityManager em = emf.createEntityManager();
+        try(EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            departments = em.createQuery(query, Departments.class).getResultList();
-            em.close();
+            departments = em.createNamedQuery("Departments.findAll", Departments.class).getResultList();
         }
         return Response.ok().entity(departments).build();
     }
@@ -35,43 +36,109 @@ public class HRResource {
     @Path("emp/{empNo}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response fullEmpRecord(@PathParam("empNo") int empNo) {
-        // using 'emp_no' from 'employees' table get all
-        // 'employees' > 'dept_emp' > 'departments' > 'dept_manager'
-        //             > 'salaries'
-        //             > 'titles'
-        return Response.ok().entity("full emp record for " + empNo + " success").build();
+        List<Object[]> fullEmpRecordById;
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            fullEmpRecordById = em.createNamedQuery("Employees.findFullRecordByEmpNo", Object[].class)
+                    .setParameter("empNo", empNo)
+                    .getResultList();
+        }
+        return Response.ok().entity(fullEmpRecordById).build();
     }
 
     //task 3
     @GET
     @Path("all-emp/{deptNo}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response allEmpRecords(@PathParam("deptNo") String depNo, @QueryParam("pageNo") @DefaultValue("1") int pageNo) {
-        int pageNoIndex = pageNo - 1;
-        // using 'dept_no' from 'employees' > 'dept_emp'
-        // returned List based on 'pageNo' cal first and last index then create a new List using subList(), each page 20 records
-        //e.g. page 3
-        // start = 3-1 * 20 = 40
-        // if (size - start < 20)
-        //      end = size - 1
-        // else
-        //      end = 40 + 20 - 1 = 59
-        return Response.ok().entity("all emp from dep " + depNo + " page " + pageNo + " success").build();
+    public Response allEmpRecords(@PathParam("deptNo") String deptNo, @QueryParam("pageNo") @DefaultValue("1") int pageNo) {
+        List<EmployeesDTO> employeesRecord;
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            employeesRecord = em.createNamedQuery("Employees.findAllRecordByDept", EmployeesDTO.class)
+                    .setParameter("deptNo", deptNo)
+                    .setFirstResult((pageNo - 1) * 20)
+                    .setMaxResults(20)
+                    .getResultList();
+        }
+        return Response.ok().entity(employeesRecord).build();
     }
 
+    //task 4
     @POST
-    @Path("emp-promote/{empNo}")
+    @Path("emp-promote")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response empPromotion(@PathParam("empNo") int empNo, @QueryParam("salary") BigDecimal salary, @QueryParam("title") String title) {
-        // create
-        // #title if 'Manager' create in 'dept_manager', 'titles', 'salary' table
-        // #title else create in 'titles' and 'salary' table
-        //      for 'to_date' from 'titles', 'dept_manager', 'salary' table set to '9999-01-01'
-        //      for 'from_date' from 'titles', 'dept_manager', 'salary' table set to today's date
+    public Response empPromotion(PromotionDTO promotionDTO) {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
 
-        // update
-        // old record 'to_date' from 'titles', 'salary' table to today's date
-        return Response.ok().entity("success").build();
+        int empNo = promotionDTO.getEmpNo();
+        Employees employees = em.find(Employees.class, empNo);
+        if (employees == null) {
+            return Response.noContent().build();
+        }
+    //Salaries
+        BigDecimal oldSalary = em.createNamedQuery("Salaries.findByEmpNoToDate", BigDecimal.class)
+                .setParameter("empNo", empNo)
+                .setParameter("toDate", LocalDate.of(9999, 01, 01))
+                .getSingleResult();
+        if (oldSalary.compareTo(promotionDTO.getSalary()) != 0) {
+            em.createNamedQuery("Salaries.updateById")
+                    .setParameter("empNo", empNo)
+                    .setParameter("curDate", LocalDate.now())
+                    .setParameter("toDate", LocalDate.of(9999, 01, 01))
+                    .executeUpdate();
+            Salaries newSalaries = new Salaries(employees, LocalDate.now(), promotionDTO.getSalary(), LocalDate.of(9999, 01, 01));
+            em.persist(newSalaries);
+        }
+    //Titles
+        String oldTitle = em.createNamedQuery("Titles.findByEmpNoToDate", String.class)
+                .setParameter("empNo", empNo)
+                .setParameter("toDate", LocalDate.of(9999, 01, 01))
+                .getSingleResult();
+        if (!oldTitle.equalsIgnoreCase(promotionDTO.getTitle())) {
+            em.createNamedQuery("Titles.updateById")
+                    .setParameter("curDate", LocalDate.now())
+                    .setParameter("oldTitle", oldTitle)
+                    .setParameter("empNo", empNo)
+                    .setParameter("toDate", LocalDate.of(9999, 01, 01))
+                    .executeUpdate();
+            Titles newTitle = new Titles(promotionDTO.getTitle(), LocalDate.now(), LocalDate.of(9999, 01, 01), employees);
+            em.persist(newTitle);
+
+        //Department Manager
+            if (promotionDTO.getTitle().equalsIgnoreCase("manager")) {
+                DeptManager newDeptManager = new DeptManager(em.find(Departments.class, promotionDTO.getDeptNo()), employees, LocalDate.now(), LocalDate.of(9999, 01, 01));
+                em.persist(newDeptManager);
+            }
+        }
+
+    //Department Employee
+        String oldDept = em.createNamedQuery("DeptEmp.findByEmpNoToDate", String.class)
+                .setParameter("empNo", empNo)
+                .setParameter("toDate", LocalDate.of(9999, 01, 01))
+                .getSingleResult();
+        if (!oldDept.equals(promotionDTO.getDeptNo())) {
+            em.createNamedQuery("DeptEmp.updateById")
+                    .setParameter("curDate", LocalDate.now())
+                    .setParameter("empNo", empNo)
+                    .setParameter("deptNo", oldDept)
+                    .executeUpdate();
+            DeptEmp newDeptEmp = new DeptEmp(employees, em.find(Departments.class, promotionDTO.getDeptNo()), LocalDate.now(), LocalDate.of(9999, 01, 01));
+            em.persist(newDeptEmp);
+            if (oldTitle.equalsIgnoreCase(promotionDTO.getTitle()) && oldTitle.equalsIgnoreCase("manager")) {
+                em.createNamedQuery("DeptManager.updateById")
+                        .setParameter("toDate", LocalDate.now())
+                        .setParameter("deptNo", oldDept)
+                        .setParameter("empNo", empNo)
+                        .executeUpdate();
+                DeptManager newDeptManager = new DeptManager(em.find(Departments.class, promotionDTO.getDeptNo()), employees, LocalDate.now(), LocalDate.of(9999, 01, 01));
+                em.persist(newDeptManager);
+            }
+        }
+
+        em.getTransaction().commit();
+        em.close();
+        return Response.ok().build();
     }
 
 }

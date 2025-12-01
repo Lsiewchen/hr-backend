@@ -8,6 +8,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
+@NamedQueries({
+    @NamedQuery(name = "Employees.findFullRecordByEmpNo",
+            query = "SELECT e FROM Employees e WHERE e.empNo = :empNo"),
+    @NamedQuery(name = "Employees.findAllRecordByDept",
+            query = "SELECT NEW Practicum2.entities.EmployeesDTO(e.empNo, e.firstName, e.lastName, e.hireDate) " +
+            "FROM Employees e JOIN e.deptEmp de " +
+            "WHERE de.departments.deptNo = :deptNo")
+})
 @Table(name="employees")
 public class Employees {
     @Id
@@ -26,7 +34,6 @@ public class Employees {
     private Gender gender;
     @Column(name = "hire_date")
     private LocalDate hireDate;
-
     @OneToMany(mappedBy = "employees")
     private List<Salaries> salaries;
     @OneToMany(mappedBy = "employees")

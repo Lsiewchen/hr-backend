@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 @Entity
+@NamedQuery(name="Departments.findAll", query="SELECT d FROM Departments d")
 @Table(name = "departments")
 public class Departments {
     @Id
@@ -16,11 +17,11 @@ public class Departments {
     @Size(max = 40)
     @Column(name = "dept_name")
     private String deptName;
-    @JsonIgnore
     @OneToMany(mappedBy = "departments")
+    @JsonIgnore
     private List<DeptEmp> deptEmp;
-    @JsonIgnore
     @OneToMany(mappedBy = "departments")
+    @JsonIgnore
     private List<DeptManager> deptManager;
 
     public Departments() {}
