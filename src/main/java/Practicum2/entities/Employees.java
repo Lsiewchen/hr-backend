@@ -12,9 +12,10 @@ import java.util.List;
     @NamedQuery(name = "Employees.findFullRecordByEmpNo",
             query = "SELECT e FROM Employees e WHERE e.empNo = :empNo"),
     @NamedQuery(name = "Employees.findAllRecordByDept",
-            query = "SELECT NEW Practicum2.entities.EmployeesDTO(e.empNo, e.firstName, e.lastName, e.hireDate) " +
-            "FROM Employees e JOIN e.deptEmp de " +
-            "WHERE de.departments.deptNo = :deptNo")
+            query = "SELECT NEW Practicum2.entities.dto.EmployeesDTO" +
+                    "(e.empNo, e.firstName, e.lastName, e.hireDate) " +
+                    "FROM Employees e JOIN e.deptEmp de " +
+                    "WHERE de.departments.deptNo = :deptNo")
 })
 @Table(name="employees")
 public class Employees {

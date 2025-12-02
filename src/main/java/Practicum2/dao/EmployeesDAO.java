@@ -30,11 +30,13 @@ public class EmployeesDAO {
         return fullEmpRecordById;
     }
 
-    public List<EmployeesDTO> findAllRecordByDept(String deptNo, int pageNo) {
+    public List<EmployeesDTO> findAllRecordByDept(String deptNo, int pageNo)
+            throws IllegalArgumentException {
         List<EmployeesDTO> employeesRecord;
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            employeesRecord = em.createNamedQuery("Employees.findAllRecordByDept", EmployeesDTO.class)
+            employeesRecord = em.createNamedQuery(
+                    "Employees.findAllRecordByDept", EmployeesDTO.class)
                     .setParameter("deptNo", deptNo)
                     .setFirstResult((pageNo - 1) * 20)
                     .setMaxResults(20)

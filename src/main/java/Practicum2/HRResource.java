@@ -20,6 +20,11 @@ public class HRResource {
     private DepartmentsDAO departmentsDAO;
     private EmployeesDAO employeesDAO;
 
+    public HRResource() {
+        this.departmentsDAO = new DepartmentsDAO();
+        this.employeesDAO = new EmployeesDAO();
+    }
+
     //task 1
     @GET
     @Path("all-dept")
@@ -38,7 +43,11 @@ public class HRResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response fullEmpRecord(@PathParam("empNo") int empNo) {
         List<Object[]> fullEmpRecordById = employeesDAO.findFullRecordByEmpNo(empNo);
-        //check
+        if (fullEmpRecordById.isEmpty()) {
+            return Response.status(404)
+                    .entity("There is no employee with employee number of " + empNo + ".")
+                    .build();
+        }
         return Response.ok().entity(fullEmpRecordById).build();
     }
 
@@ -46,9 +55,22 @@ public class HRResource {
     @GET
     @Path("all-emp/{deptNo}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response allEmpRecords(@PathParam("deptNo") String deptNo, @QueryParam("pageNo") @DefaultValue("1") int pageNo) {
-        List<EmployeesDTO> employeesRecord = employeesDAO.findAllRecordByDept(deptNo, pageNo);
-        //check
+    public Response allEmpRecords(@PathParam("deptNo") String deptNo,
+                                  @QueryParam("pageNo") @DefaultValue("1") int pageNo) {
+        List<EmployeesDTO> employeesRecord;
+        try {
+            employeesRecord = employeesDAO.findAllRecordByDept(deptNo, pageNo);
+        }
+        catch (IllegalArgumentException e) {
+            return Response.status(404)
+                    .entity("There is no employee record in page " + pageNo + ".")
+                    .build();
+        }
+        if (employeesRecord.isEmpty()) {
+            return Response.status(404)
+                    .entity("There is no employee record in department " + deptNo + ".")
+                    .build();
+        }
         return Response.ok().entity(employeesRecord).build();
     }
 
