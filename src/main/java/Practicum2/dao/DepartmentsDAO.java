@@ -18,7 +18,8 @@ public class DepartmentsDAO {
         List<Departments> departments;
         try(EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            departments = em.createNamedQuery("Departments.findAll", Departments.class).getResultList();
+            departments = em.createNamedQuery(
+                    "Departments.findAll", Departments.class).getResultList();
         }
         return departments;
     }

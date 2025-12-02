@@ -9,12 +9,6 @@ public class PromotionDTO {
     private String deptNo;
 
     public PromotionDTO() {}
-    public PromotionDTO(int empNo, BigDecimal salary, String title, String deptNo) {
-        this.empNo = empNo;
-        this.salary = salary;
-        this.title = title;
-        this.deptNo = deptNo;
-    }
 
     public int getEmpNo() {
         return empNo;
@@ -30,5 +24,21 @@ public class PromotionDTO {
 
     public String getDeptNo() {
         return deptNo;
+    }
+
+    public void setEmpNo(int empNo) {
+        this.empNo = empNo;
+    }
+
+    public void setSalary(BigDecimal salary) {
+        this.salary = salary;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDeptNo(String deptNo) {
+        this.deptNo = deptNo;
     }
 }

@@ -57,9 +57,10 @@ public class HRResource {
     @Path("emp-promote")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response empPromotion(PromotionDTO promotionDTO) {
-        Boolean promoteEmployee = employeesDAO.promoteEmployee(promotionDTO);
-        //check
-        return Response.ok().build();
+        String promoteEmployee = employeesDAO.promoteEmployee(promotionDTO);
+
+        return Response.ok().entity(promoteEmployee).build();
+
     }
 
 }
