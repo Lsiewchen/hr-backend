@@ -99,6 +99,10 @@ public class EmployeesDAO {
             }
             //Titles
             boolean changedTitle = false;
+            String oldTitle = em.createNamedQuery("Titles.findByEmpNoToDate", String.class)
+                    .setParameter("empNo", employees.getEmpNo())
+                    .setParameter("toDate", LocalDate.of(9999, 1, 1))
+                    .getSingleResult();
             if (promotionDTO.getTitle() != null) {
                 changedTitle = changeTitle(em, employees, promotionDTO.getTitle());
             }
@@ -114,10 +118,16 @@ public class EmployeesDAO {
                 changedDepartment = changeDepartment(em, employees, departments);
             }
             //Departments Manager
-            if (promotionDTO.getTitle() != null
-                    && promotionDTO.getTitle().equalsIgnoreCase("manager")
+            boolean titleChangedToManager = promotionDTO.getTitle() != null
+                    && promotionDTO.getTitle().equalsIgnoreCase("manager");
+            boolean previouslyManager = oldTitle.equalsIgnoreCase("manager");
+            String currentDeptNo = em.createNamedQuery("DeptEmp.findByEmpNoToDate", String.class)
+                    .setParameter("empNo", employees.getEmpNo())
+                    .setParameter("toDate", LocalDate.of(9999, 1, 1))
+                    .getSingleResult();
+            if ((titleChangedToManager || previouslyManager)
                     && (changedTitle || changedDepartment)) {
-                changeDeptManager(em, employees, departments);
+                changeDeptManager(em, employees, em.find(Departments.class, currentDeptNo));
             }
 
             em.getTransaction().commit();

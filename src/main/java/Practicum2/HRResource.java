@@ -5,14 +5,10 @@ import Practicum2.dao.EmployeesDAO;
 import Practicum2.entities.*;
 import Practicum2.entities.dto.EmployeesDTO;
 import Practicum2.entities.dto.PromotionDTO;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 /**

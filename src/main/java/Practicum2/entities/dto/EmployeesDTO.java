@@ -33,6 +33,20 @@ public class EmployeesDTO {
      * Default constructor for the EmployeesDTO class.
      */
     public EmployeesDTO() {}
+    /**
+     * Constructs a new {@code EmployeesDTO} instance with the specified employee
+     * number, first name, last name and hire date.
+     * @param empNo - an integer of employee number
+     * @param firstName - a String of employee first name
+     * @param lastName - a String of employee last name
+     * @param hireDate - a LocalDate of employee hire date
+     */
+    public EmployeesDTO(int empNo, String firstName, String lastName, LocalDate hireDate) {
+        this.empNo = empNo;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.hireDate = hireDate;
+    }
 
     /**
      * Retrieves the employee number of this employee.
