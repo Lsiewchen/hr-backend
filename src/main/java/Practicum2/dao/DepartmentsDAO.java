@@ -7,13 +7,26 @@ import jakarta.persistence.EntityManagerFactory;
 
 import java.util.List;
 
+/**
+ * DAO class that encapsulates all database access and operations for Departments data.
+ */
 public class DepartmentsDAO {
+    /**
+     * Entity Manager Factory instance to be used to create the Entity Manager.
+     */
     private EntityManagerFactory emf;
 
+    /**
+     * Constructor that retrieves the shared EntityManagerFactory instance.
+     */
     public DepartmentsDAO() {
         this.emf = EMFactory.getInstance();
     }
 
+    /**
+     * Method to get all departments.
+     * @return - a list of all departments
+     */
     public List<Departments> findAllDepartments() {
         List<Departments> departments;
         try(EntityManager em = emf.createEntityManager()) {

@@ -18,8 +18,8 @@ import java.time.LocalDate;
  */
 @Entity
 @NamedQuery(name = "DeptManager.updateById",
-        query="UPDATE DeptManager dm SET dm.toDate = :toDate " +
-                "WHERE dm.departments.deptNo = :deptNo AND dm.employees.empNo = :empNo")
+        query="UPDATE DeptManager dm SET dm.toDate = :curDate " +
+                "WHERE dm.employees.empNo = :empNo AND dm.toDate = :toDate")
 @IdClass(DeptManagerId.class)
 @Table(name = "dept_manager")
 public class DeptManager {

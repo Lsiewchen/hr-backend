@@ -15,17 +15,34 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * HRResource class that exposes all HR-related endpoints.
+ */
 @Path("hr")
 public class HRResource {
+    /**
+     * Departments DAO used to perform all database operations related to departments.
+     */
     private DepartmentsDAO departmentsDAO;
+    /**
+     * Employees DAO used to perform all database operations related to employees.
+     */
     private EmployeesDAO employeesDAO;
 
+    /**
+     * Constructor to initialize DAO.
+     */
     public HRResource() {
         this.departmentsDAO = new DepartmentsDAO();
         this.employeesDAO = new EmployeesDAO();
     }
 
-    //task 1
+    /**
+     * GET request to retrieve all departments from the database.
+     * @return - a 200 status with Response object containing either the list of
+     * all departments as JSON or a 404 status with an appropriate error message
+     * if no departments exist
+     */
     @GET
     @Path("all-dept")
     @Produces(MediaType.APPLICATION_JSON)
@@ -37,7 +54,14 @@ public class HRResource {
         return Response.ok().entity(departments).build();
     }
 
-    //task 2
+    /**
+     * GET request to retrieve the full record of an employee record based on
+     * employee number.
+     * @param empNo - an integer of employee number
+     * @return - a 200 status with Response object containing the employee's full
+     * record as a JSON object or a 404 status with an appropriate error message
+     * if no employee is found
+     */
     @GET
     @Path("emp/{empNo}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -51,7 +75,13 @@ public class HRResource {
         return Response.ok().entity(fullEmpRecordById).build();
     }
 
-    //task 3
+    /**
+     * GET request to retrieve a paginated list of employees for a specific department.
+     * @param deptNo - a String of department number
+     * @param pageNo - a integer of page number, defaults to 1 if not provided
+     * @return - a 200 status with Response object containing a list of EmployeesDTO
+     * or a 404 status if no records are found
+     */
     @GET
     @Path("all-emp/{deptNo}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -68,21 +98,31 @@ public class HRResource {
         }
         if (employeesRecord.isEmpty()) {
             return Response.status(404)
-                    .entity("There is no employee record in department " + deptNo + ".")
+                    .entity("There is no employee record in department "
+                            + deptNo + " and page " + pageNo + ".")
                     .build();
         }
         return Response.ok().entity(employeesRecord).build();
     }
 
-    //task 4
+    /**
+     * POST request to promote an employee based on the details provided in the
+     * PromotionDTO object. The function includes updating the employee's title,
+     * salary, department and department manager.
+     * @param promotionDTO - an object containing the promotion details, including
+     *                     employee number, new salary, new title, and new
+     *                     department number
+     * @return - a Response object containing the result of the promotion
+     * operation, typically including a success message with updated details
+     */
     @POST
     @Path("emp-promote")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response empPromotion(PromotionDTO promotionDTO) {
         String promoteEmployee = employeesDAO.promoteEmployee(promotionDTO);
-
-        return Response.ok().entity(promoteEmployee).build();
-
+        if (promoteEmployee == null) {
+            return Response.ok().entity("Promotion successful.").build();
+        }
+        return Response.status(400).entity(promoteEmployee).build();
     }
-
 }
