@@ -33,6 +33,7 @@ public class DepartmentsDAO {
             em.getTransaction().begin();
             departments = em.createNamedQuery(
                     "Departments.findAll", Departments.class).getResultList();
+            em.getTransaction().commit();
         }
         return departments;
     }

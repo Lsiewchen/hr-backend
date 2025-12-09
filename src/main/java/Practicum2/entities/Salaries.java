@@ -1,8 +1,17 @@
 package Practicum2.entities;
 
 import Practicum2.entities.id.SalariesId;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,7 +30,7 @@ import java.time.LocalDate;
                 query="SELECT s.salary FROM Salaries s " +
                         "WHERE s.employees.empNo = :empNo AND s.toDate = :toDate"),
         @NamedQuery(name = "Salaries.updateById",
-                query="UPDATE Salaries s SET s.toDate = :curDate " +
+                query="UPDATE Salaries s SET s.toDate = :promotionDate " +
                         "WHERE s.employees.empNo = :empNo AND s.toDate = :toDate")
 })
 @IdClass(SalariesId.class)
@@ -58,6 +67,7 @@ public class Salaries {
      */
     @Id
     @Column(name = "from_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate fromDate;
 
     /**
@@ -65,6 +75,7 @@ public class Salaries {
      * This field maps to the "to_date" column in the "salaries" table.
      */
     @Column(name = "to_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate toDate;
 
     /**

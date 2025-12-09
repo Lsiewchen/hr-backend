@@ -2,8 +2,8 @@ package Practicum2.dao;
 
 import Practicum2.EMFactory;
 import Practicum2.entities.*;
-import Practicum2.entities.dto.EmployeesDTO;
-import Practicum2.entities.dto.PromotionDTO;
+import Practicum2.dto.EmployeesDTO;
+import Practicum2.dto.PromotionDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
@@ -40,6 +40,7 @@ public class EmployeesDAO {
                     "Employees.findFullRecordByEmpNo", Object[].class)
                     .setParameter("empNo", empNo)
                     .getResultList();
+            em.getTransaction().commit();
         }
         return fullEmpRecordById;
     }
@@ -64,6 +65,7 @@ public class EmployeesDAO {
                     .setFirstResult((pageNo - 1) * 20)
                     .setMaxResults(20)
                     .getResultList();
+            em.getTransaction().commit();
         }
         return employeesRecord;
     }
@@ -78,56 +80,60 @@ public class EmployeesDAO {
      */
     public String promoteEmployee(PromotionDTO promotionDTO) {
         EntityManager em = emf.createEntityManager();
+        int empNo = promotionDTO.getEmpNo();
+        BigDecimal newSalary = promotionDTO.getSalary();
+        String newTitle = promotionDTO.getTitle();
+        String newDeptNo = promotionDTO.getDeptNo();
+        LocalDate promotionDate = promotionDTO.getPromotionDate();
+
         try {
             em.getTransaction().begin();
-            Employees employees = em.find(Employees.class, promotionDTO.getEmpNo());
-            if (employees == null) {
-                return "There is no employee with employee number of " + promotionDTO.getEmpNo() + ".";
+            if (em.find(Employees.class, empNo) == null) {
+                return "There is no such employee.";
             }
-            if (promotionDTO.getSalary() == null &&
-                    promotionDTO.getTitle() == null &&
-                    promotionDTO.getDeptNo() == null) {
+            if (newSalary == null &&
+                    newTitle == null &&
+                    newDeptNo == null &&
+                    promotionDate == null) {
                 return "JSON body is empty.";
             }
 
             //Salaries
-            if (promotionDTO.getSalary() != null) {
-                if (promotionDTO.getSalary().compareTo(BigDecimal.ZERO) < 0) {
+            if (newSalary != null) {
+                if (newSalary.compareTo(BigDecimal.ZERO) < 0) {
                     return "Salary cannot be negative.";
                 }
-                changeSalary(em, employees, promotionDTO.getSalary());
+                changeSalary(em, empNo, newSalary, promotionDate);
             }
             //Titles
             boolean changedTitle = false;
             String oldTitle = em.createNamedQuery("Titles.findByEmpNoToDate", String.class)
-                    .setParameter("empNo", employees.getEmpNo())
+                    .setParameter("empNo", empNo)
                     .setParameter("toDate", LocalDate.of(9999, 1, 1))
                     .getSingleResult();
             if (promotionDTO.getTitle() != null) {
-                changedTitle = changeTitle(em, employees, promotionDTO.getTitle());
+                changedTitle = changeTitle(em, empNo, newTitle, promotionDate);
             }
             //Departments Employees
-            Departments departments = null;
             boolean changedDepartment = false;
-            if (promotionDTO.getDeptNo() != null) {
-                departments = em.find(Departments.class, promotionDTO.getDeptNo());
-                if (departments == null) {
+            if (newDeptNo != null) {
+                if (em.find(Departments.class, promotionDTO.getDeptNo()) == null) {
                     em.getTransaction().rollback();
-                    return "The department " + promotionDTO.getDeptNo() + " does not exist.";
+                    return "The department " + newDeptNo + " does not exist.";
                 }
-                changedDepartment = changeDepartment(em, employees, departments);
+                changedDepartment = changeDepartment(em, empNo, newDeptNo, promotionDate);
             }
             //Departments Manager
-            boolean titleChangedToManager = promotionDTO.getTitle() != null
-                    && promotionDTO.getTitle().equalsIgnoreCase("manager");
+            boolean titleChangedToManager = newTitle != null
+                    && newTitle.equalsIgnoreCase("manager");
             boolean previouslyManager = oldTitle.equalsIgnoreCase("manager");
             String currentDeptNo = em.createNamedQuery("DeptEmp.findByEmpNoToDate", String.class)
-                    .setParameter("empNo", employees.getEmpNo())
+                    .setParameter("empNo", empNo)
                     .setParameter("toDate", LocalDate.of(9999, 1, 1))
                     .getSingleResult();
             if ((titleChangedToManager || previouslyManager)
                     && (changedTitle || changedDepartment)) {
-                changeDeptManager(em, employees, em.find(Departments.class, currentDeptNo));
+                changeDeptManager(em, empNo, currentDeptNo, promotionDate);
             }
 
             em.getTransaction().commit();
@@ -135,7 +141,7 @@ public class EmployeesDAO {
         }
         catch (Exception e){
             em.getTransaction().rollback();
-            return "Promotion unsuccessful. Error: " + e.getClass().getName();
+            return "Promotion unsuccessful.";
         }
         finally {
             em.close();
@@ -146,21 +152,22 @@ public class EmployeesDAO {
      * Method to change the salary of an employee, it will check and update the
      * 'toDate' of the current salary before adding the new salary.
      * @param em - an Entity Manager to manage the persistence context
-     * @param employees - an Employees object
+     * @param empNo - an integer of employee number
      * @param salary - a BigDecimal of the new salary
+     * @param promotionDate - a LocalDate of the promotion date
      */
-    private void changeSalary(EntityManager em, Employees employees, BigDecimal salary) {
+    private void changeSalary(EntityManager em, int empNo, BigDecimal salary, LocalDate promotionDate) {
         BigDecimal oldSalary = em.createNamedQuery("Salaries.findByEmpNoToDate", BigDecimal.class)
-                .setParameter("empNo", employees.getEmpNo())
+                .setParameter("empNo", empNo)
                 .setParameter("toDate", LocalDate.of(9999, 1, 1))
                 .getSingleResult();
         if (oldSalary.compareTo(salary) != 0) {
             em.createNamedQuery("Salaries.updateById")
-                    .setParameter("empNo", employees.getEmpNo())
-                    .setParameter("curDate", LocalDate.now())
+                    .setParameter("empNo", empNo)
+                    .setParameter("promotionDate", promotionDate)
                     .setParameter("toDate", LocalDate.of(9999, 1, 1))
                     .executeUpdate();
-            Salaries newSalaries = new Salaries(employees, LocalDate.now(), salary,
+            Salaries newSalaries = new Salaries(em.find(Employees.class, empNo), promotionDate, salary,
                     LocalDate.of(9999, 1, 1));
             em.persist(newSalaries);
         }
@@ -170,24 +177,25 @@ public class EmployeesDAO {
      * Method to change the title of an employee, it will check and update the
      * 'toDate' of the current title before adding the new title.
      * @param em - an Entity Manager to manage the persistence context
-     * @param employees - an Employees object
+     * @param empNo - an integer of employee number
      * @param title - a String of the new title
+     * @param promotionDate - a LocalDate of the promotion date
      * @return - a boolean to indicate if title has been changed
      */
-    private boolean changeTitle(EntityManager em, Employees employees, String title) {
+    private boolean changeTitle(EntityManager em, int empNo, String title, LocalDate promotionDate) {
         String oldTitle = em.createNamedQuery("Titles.findByEmpNoToDate", String.class)
-                .setParameter("empNo", employees.getEmpNo())
+                .setParameter("empNo", empNo)
                 .setParameter("toDate", LocalDate.of(9999, 1, 1))
                 .getSingleResult();
         if (!oldTitle.equalsIgnoreCase(title)) {
             em.createNamedQuery("Titles.updateById")
-                    .setParameter("curDate", LocalDate.now())
+                    .setParameter("promotionDate", promotionDate)
                     .setParameter("oldTitle", oldTitle)
-                    .setParameter("empNo", employees.getEmpNo())
+                    .setParameter("empNo", empNo)
                     .setParameter("toDate", LocalDate.of(9999, 1, 1))
                     .executeUpdate();
-            Titles newTitle = new Titles(title, LocalDate.now(),
-                    LocalDate.of(9999, 1, 1), employees);
+            Titles newTitle = new Titles(title, promotionDate,
+                    LocalDate.of(9999, 1, 1), em.find(Employees.class, empNo));
             em.persist(newTitle);
             return true;
         }
@@ -198,22 +206,24 @@ public class EmployeesDAO {
      * Method to change the department of an employee, it will check and update the
      * 'toDate' of the current title before adding the new department.
      * @param em - an Entity Manager to manage the persistence context
-     * @param employees - an Employees object
-     * @param departments - a Departments object of the new department
+     * @param empNo - an integer of employee number
+     * @param deptNo - a String of department number
+     * @param promotionDate - a LocalDate of the promotion date
      * @return - a boolean to indicate if department has been changed
      */
-    private boolean changeDepartment(EntityManager em, Employees employees, Departments departments) {
+    private boolean changeDepartment(EntityManager em, int empNo, String deptNo, LocalDate promotionDate) {
         String oldDept = em.createNamedQuery("DeptEmp.findByEmpNoToDate", String.class)
-                .setParameter("empNo", employees.getEmpNo())
+                .setParameter("empNo", empNo)
                 .setParameter("toDate", LocalDate.of(9999, 1, 1))
                 .getSingleResult();
-        if (!oldDept.equals(departments.getDeptNo())) {
+        if (!oldDept.equals(deptNo)) {
             em.createNamedQuery("DeptEmp.updateById")
-                    .setParameter("curDate", LocalDate.now())
-                    .setParameter("empNo", employees.getEmpNo())
+                    .setParameter("promotionDate", promotionDate)
+                    .setParameter("empNo", empNo)
                     .setParameter("deptNo", oldDept)
                     .executeUpdate();
-            DeptEmp newDeptEmp = new DeptEmp(employees, departments, LocalDate.now(),
+            DeptEmp newDeptEmp = new DeptEmp(em.find(Employees.class, empNo),
+                    em.find(Departments.class, deptNo), promotionDate,
                     LocalDate.of(9999, 1, 1));
             em.persist(newDeptEmp);
             return true;
@@ -226,17 +236,18 @@ public class EmployeesDAO {
      * department manager it will update the 'toDate' before adding a new
      * record for department manager.
      * @param em - an Entity Manager to manage the persistence context
-     * @param employees - an Employees object
-     * @param departments - a Departments object of the new department
+     * @param empNo - an integer of employee number
+     * @param deptNo - a String of department number
      */
-    private void changeDeptManager(EntityManager em, Employees employees, Departments departments) {
+    private void changeDeptManager(EntityManager em, int empNo, String deptNo, LocalDate promotionDate) {
         em.createNamedQuery("DeptManager.updateById")
-                .setParameter("curDate", LocalDate.now())
-                .setParameter("empNo", employees.getEmpNo())
+                .setParameter("promotionDate", promotionDate)
+                .setParameter("empNo", empNo)
                 .setParameter("toDate", LocalDate.of(9999, 1, 1))
                 .executeUpdate();
-        DeptManager deptManager = new DeptManager(departments, employees,
-                LocalDate.now(), LocalDate.of(9999, 1, 1));
+        DeptManager deptManager = new DeptManager(em.find(Departments.class, deptNo),
+                em.find(Employees.class, empNo), promotionDate,
+                LocalDate.of(9999, 1, 1));
         em.persist(deptManager);
     }
 }

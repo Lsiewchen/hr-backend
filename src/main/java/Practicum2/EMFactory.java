@@ -12,16 +12,9 @@ import java.util.Map;
 public class EMFactory {
 
     /**
-     * A static instance of the EMFactory class used to manage the lifecycle
-     * of the EntityManagerFactory. Implements the Singleton design pattern
-     * to ensure only one instance of EMFactory is created and accessed globally.
-     */
-    private static EMFactory emFactory;
-
-    /**
      * A static singleton instance of {@link EntityManagerFactory}
      */
-    private static EntityManagerFactory emf;
+    private static volatile EntityManagerFactory emf;
 
     /**
      * The name of the persistence unit used for creating an
@@ -60,10 +53,10 @@ public class EMFactory {
      * @return the singleton instance of {@link EntityManagerFactory}
      */
     public static EntityManagerFactory getInstance(){
-        if (emFactory == null){
+        if (emf == null){
             synchronized (EMFactory.class) {
-                if (emFactory == null) {
-                    emFactory = new EMFactory();
+                if (emf == null) {
+                    new EMFactory();
                 }
             }
         }
@@ -76,6 +69,8 @@ public class EMFactory {
      * EntityManagerFactory.
      */
     public static void closeEMF() {
-        emf.close();
+        if (emf != null && emf.isOpen()) {
+            emf.close();
+        }
     }
 }

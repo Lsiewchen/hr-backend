@@ -1,7 +1,17 @@
 package Practicum2.entities;
 
 import Practicum2.entities.enums.Gender;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.FetchType;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
@@ -20,7 +30,7 @@ import java.util.List;
     @NamedQuery(name = "Employees.findFullRecordByEmpNo",
             query = "SELECT e FROM Employees e WHERE e.empNo = :empNo"),
     @NamedQuery(name = "Employees.findAllRecordByDept",
-            query = "SELECT NEW Practicum2.entities.dto.EmployeesDTO" +
+            query = "SELECT NEW Practicum2.dto.EmployeesDTO" +
                     "(e.empNo, e.firstName, e.lastName, e.hireDate) " +
                     "FROM Employees e JOIN e.deptEmp de " +
                     "WHERE de.departments.deptNo = :deptNo")
@@ -41,6 +51,7 @@ public class Employees {
      * "employees" database table.
      */
     @Column(name = "birth_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
     /**
@@ -73,6 +84,7 @@ public class Employees {
      * "employees" database table.
      */
     @Column(name = "hire_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate hireDate;
 
     /**
@@ -80,7 +92,7 @@ public class Employees {
      * This object establishes a one-to-many relationship between the
      * {@code Employees} entity and the {@code Salaries} entity
      */
-    @OneToMany(mappedBy = "employees")
+    @OneToMany(mappedBy = "employees", fetch = FetchType.EAGER)
     private List<Salaries> salaries;
 
     /**
@@ -88,7 +100,7 @@ public class Employees {
      * This object establishes a one-to-many relationship between the
      * {@code Employees} entity and the {@code Titles} entity
      */
-    @OneToMany(mappedBy = "employees")
+    @OneToMany(mappedBy = "employees", fetch = FetchType.EAGER)
     private List<Titles> titles;
 
     /**
@@ -96,7 +108,7 @@ public class Employees {
      * This object establishes a one-to-many relationship between the
      * {@code Employees} entity and the {@code DeptEmp} entity.
      */
-    @OneToMany(mappedBy = "employees")
+    @OneToMany(mappedBy = "employees", fetch = FetchType.EAGER)
     private List<DeptEmp> deptEmp;
 
     /**
@@ -104,7 +116,7 @@ public class Employees {
      * This object establishes a one-to-many relationship between the
      * {@code Employees} entity and the {@code DeptManager} entity.
      */
-    @OneToMany(mappedBy = "employees")
+    @OneToMany(mappedBy = "employees", fetch = FetchType.EAGER)
     private List<DeptManager> deptManager;
 
     /**

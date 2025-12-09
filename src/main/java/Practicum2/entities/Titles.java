@@ -1,8 +1,17 @@
 package Practicum2.entities;
 
 import Practicum2.entities.id.TitlesId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
@@ -21,7 +30,7 @@ import java.time.LocalDate;
                 query="SELECT t.title FROM Titles t " +
                         "WHERE t.employees.empNo = :empNo AND t.toDate = :toDate"),
         @NamedQuery(name = "Titles.updateById",
-                query="UPDATE Titles t SET t.toDate = :curDate " +
+                query="UPDATE Titles t SET t.toDate = :promotionDate " +
                         "WHERE t.title = :oldTitle AND t.employees.empNo = :empNo AND t.toDate = :toDate")
 })
 @IdClass(TitlesId.class)
@@ -45,6 +54,7 @@ public class Titles {
      */
     @Id
     @Column(name = "from_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate fromDate;
 
     /**
@@ -52,6 +62,7 @@ public class Titles {
      * This field maps to the "to_date" column in the "titles" table.
      */
     @Column(name = "to_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate toDate;
 
     /**

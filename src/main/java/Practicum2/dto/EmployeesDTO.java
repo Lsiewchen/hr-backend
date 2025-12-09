@@ -1,4 +1,7 @@
-package Practicum2.entities.dto;
+package Practicum2.dto;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
 
 import java.time.LocalDate;
 
@@ -27,6 +30,7 @@ public class EmployeesDTO {
     /**
      * The hire date of an employee
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate hireDate;
 
     /**

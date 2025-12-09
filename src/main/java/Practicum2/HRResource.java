@@ -3,9 +3,16 @@ package Practicum2;
 import Practicum2.dao.DepartmentsDAO;
 import Practicum2.dao.EmployeesDAO;
 import Practicum2.entities.*;
-import Practicum2.entities.dto.EmployeesDTO;
-import Practicum2.entities.dto.PromotionDTO;
-import jakarta.ws.rs.*;
+import Practicum2.dto.EmployeesDTO;
+import Practicum2.dto.PromotionDTO;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -74,7 +81,7 @@ public class HRResource {
     /**
      * GET request to retrieve a paginated list of employees for a specific department.
      * @param deptNo - a String of department number
-     * @param pageNo - a integer of page number, defaults to 1 if not provided
+     * @param pageNo - an integer of page number, defaults to 1 if not provided
      * @return - a 200 status with Response object containing a list of EmployeesDTO
      * or a 404 status if no records are found
      */
@@ -111,13 +118,21 @@ public class HRResource {
      * @return - a Response object containing the result of the promotion
      * operation, typically including a success message with updated details
      */
+    // Example of format for JSON body:
+    // {
+    //    "empNo": 10001,
+    //    "title": "manager",
+    //    "deptNo": "d007",
+    //    "salary": 90000,
+    //    "promotionDate": [2025, 11, 28]
+    // }
     @POST
     @Path("emp-promote")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response empPromotion(PromotionDTO promotionDTO) {
         String promoteEmployee = employeesDAO.promoteEmployee(promotionDTO);
         if (promoteEmployee == null) {
-            return Response.ok().entity("Promotion successful.").build();
+            return Response.status(201).entity("Promotion successful.").build();
         }
         return Response.status(400).entity(promoteEmployee).build();
     }

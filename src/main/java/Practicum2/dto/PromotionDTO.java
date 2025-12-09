@@ -1,6 +1,7 @@
-package Practicum2.entities.dto;
+package Practicum2.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 /**
  * DTO class used to transfer promotion details within the system.
@@ -31,6 +32,11 @@ public class PromotionDTO {
      * employee's current department if any.
      */
     private String deptNo;
+
+    /**
+     * Represents the date the employee is to be promoted.
+     */
+    private LocalDate promotionDate;
 
     /**
      * Default constructor for the PromotionDTO class.
@@ -75,6 +81,15 @@ public class PromotionDTO {
     }
 
     /**
+     * Retrieves the promotion date of this employee.
+     *
+     * @return the promotion date of the employee
+     */
+    public LocalDate getPromotionDate() {
+        return promotionDate;
+    }
+
+    /**
      * Sets the employee number for this employee.
      *
      * @param empNo the employee number to be set
@@ -108,5 +123,14 @@ public class PromotionDTO {
      */
     public void setDeptNo(String deptNo) {
         this.deptNo = deptNo;
+    }
+
+    /**
+     * Sets the promotion date for this employee.
+     *
+     * @param promotionDate the promotion date for the employee
+     */
+    public void setPromotionDate(LocalDate promotionDate) {
+        this.promotionDate = promotionDate;
     }
 }
